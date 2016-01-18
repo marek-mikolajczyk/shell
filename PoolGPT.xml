@@ -1,0 +1,17 @@
+<pool type='disk'>
+  <name>PoolGPT</name>
+  <uuid>fe42686c-5805-44c9-b60a-3a53c4821c2f</uuid>
+  <capacity unit='bytes'>1073724928</capacity>
+  <allocation unit='bytes'>0</allocation>
+  <available unit='bytes'>1073707520</available>
+  <source>
+    <device path='/dev/sdd'>
+      <freeExtent start='17408' end='1073724928'/>
+    </device>
+    <format type='gpt'/>
+  </source>
+  <target>
+    <path>/dev</path>
+  </target>
+</pool>
+
