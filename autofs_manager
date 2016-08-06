@@ -1,0 +1,93 @@
+#!/bin/bash
+
+function proceed {
+echo "Proceed(y/n)"
+read ANSWER
+if [[ $ANSWER = n ]]; then
+echo "Bye"
+fi
+}
+
+function input {
+    echo "give nas mountpoint"
+    read NASMOUNTPOINT
+    echo 'give nas:path'
+    read NASPATH
+}
+
+echo "server to perform action"
+read SERVERDEST
+
+echo ""
+echo  "============================================"
+echo "NAS Manager"
+echo "1. ADD nas entry"
+echo "2. DELETE nas entry"
+echo "3. SHOW nas entry"
+echo "4. EXIT"
+echo ""
+echo  "============================================"
+echo ""
+echo "which action?"
+read ACTION
+
+case $ACTION in
+        1)      input
+
+                echo  "==========="
+                echo  "==========="
+                echo "test if entry already exists"
+                ssh $SERVERDEST "grep $NASMOUNTPOINT /etc/auto.staging"
+                if [[ $? = 0 ]]; then
+                        echo "mountpoint already in use - exit"
+                        exit
+                elif [[ $? = 1 ]]; then
+                        echo  "can add mountpoint"
+                fi
+                echo  "==========="
+                proceed
+                echo  "==========="
+                echo 'test if nas:path already mounted'
+                ssh $SERVERDEST "grep $NASPATH /etc/auto.staging"
+                if [[ $? = 0 ]]; then
+                        echo "$NASPATH already mounted"
+                        echo "exit"
+                        exit
+
+                        echo "can add nas share"
+                elif [[ $? = 0 ]]; then
+                        echo "can add nas share"
+
+                fi
+                echo "will add entry"
+                #proceed
+                ssh  $SERVERDEST "sudo su -c \"echo "$NASMOUNTPOINT   $NASPATH" >> /etc/auto.staging\""
+                echo ""
+                echo  "==========="
+                echo "current /etc/auto.staging"
+                echo  "==========="
+                ssh $SERVERDEST "cat /etc/auto.staging"
+        ;;
+        2)      input
+
+                echo  "==========="
+                echo  "==========="
+                echo "making backup of current file"
+                ssh  $SERVERDEST "sudo su -c \"cp -p /etc/auto.staging /etc/auto.staging_`date +%F`  \""
+                if [[ $? = 0 ]]; then
+                    echo "Backup made OK"
+                else
+                    echo "Backup KO"
+                    exit
+                fi
+                proceed
+                ssh $SERVERDEST "sudo su -c \"grep -v $NASPATH /etc/auto.staging_`date +%F` | grep -v $NASMOUNTPOINT /etc/auto.staging_`date +%F` > /etc/auto.staging\""
+                echo "mounts before change"
+                ssh $SERVERDEST "cat /etc/auto.staging_`date +%F`"
+                echo "mounts AFTER change"
+                ssh $SERVERDEST "cat /etc/auto.staging"
+                ;;
+        3)      ssh  $SERVERDEST "cat /etc/auto.staging"
+                ;;
+        4) exit
+        esac
