@@ -318,7 +318,7 @@ echo "- added allowed environments for resize"
 
 echo "- added $1 parameters ( [-fs ] or [-sid] )"
 
-echo "- added sendemail info to unix team ( after dba admin adds space, for now mail to mikolm )"
+echo "- added sendemail info to unix team ( after dba admin adds space, for now mail to me )"
 
 echo "- more clean df output with -sid"
 
